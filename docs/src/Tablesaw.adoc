@@ -1,0 +1,26 @@
+:Author:                Aowss Ibrahim
+:Email:                 <aowss@yahoo.com>
+:Date:                  January 2021
+:Revision:              version 0.1.0
+:source-highlighter:    highlightjs
+:source-language:       java
+:imagesdir:             ./res
+:toclevels:             3
+:icons:                 font
+:data-uri:
+
+= Tablesaw Notes
+
+This is not a replacement for the https://github.com/jtablesaw/tablesaw[Tablesaw] documentation.
+
+== Jupyter
+
+Tablesaw can be used inside https://jupyter.org/[Jupyter] notebooks using http://beakerx.com/documentation[BeakerX].
+
+. Run BeakerX using https://www.docker.com/[Docker] : `docker run -p 8888:8888 beakerx/beakerx`
++
+image::Run-BeakerX.png[Run BeakerX]
+
+. Access Beaker at http://locahost:8888?token={generatedToken} footnote:[The URL is written to the console, [red]#as shown#, when you run BeakerX] footnote:[You might have to use `localhost` instead of the random id generate for the host, e.g. `4a25c59faf29` in the screenshot]
+. Use the `StartHere.ipynb` notebook
+. Scroll down to the `Tablesaw` section and use the notebook provided there

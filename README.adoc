@@ -1,0 +1,6 @@
+= Data Library
+
+== Resources
+
+* https://github.com/jtablesaw/tablesaw[Tablesaw]
+* https://github.com/cardillo/joinery[Joinery]

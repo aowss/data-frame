@@ -1,0 +1,15 @@
+:Author:                Aowss Ibrahim
+:Email:                 <aowss@yahoo.com>
+:Date:                  January 2021
+:Revision:              version 0.1.0
+:source-highlighter:    highlightjs
+:source-language:       java
+:imagesdir:             ./res
+:toclevels:             3
+:icons:                 font
+:data-uri:
+
+= Joinery Notes
+
+This is not a replacement for the https://github.com/cardillo/joinery[Joinery] documentation.
+

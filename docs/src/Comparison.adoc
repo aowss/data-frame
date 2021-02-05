@@ -1,0 +1,436 @@
+:Author:                Aowss Ibrahim
+:Email:                 <aowss@yahoo.com>
+:Date:                  January 2021
+:Revision:              version 0.1.0
+:source-highlighter:    highlightjs
+:imagesdir:             ./res
+:toc:
+:toclevels:             3
+:icons:                 font
+:data-uri:
+
+= Comparison
+
+The goal of this document is to compare Python's https://pandas.pydata.org/pandas-docs/stable/index.html[Pandas library], R https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame[Data Frames package] and Java in terms of data science and to evaluate the need for another Java library.
+
+This was inspired by https://medium.com/@thijser/doing-cool-data-science-in-java-how-3-dataframe-libraries-stack-up-5e6ccb7b437[Doing cool data science in Java: how 3 DataFrame libraries stack up] by Mathijs Vogelzang [ September 2018 ].
+
+== Getting Started
+
+In this section, we will follow the https://pandas.pydata.org/pandas-docs/stable/getting_started/intro_tutorials/index.html[Pandas Getting started tutorials].
+
+=== Creation
+
+==== Creating a `DataFrame`
+
+What the Pandas library calls a `DataFrame` is a 2-dimensional data structure that can store data of different types in columns footnote:[It is similar to a spreadsheet, a SQL table or the `data.frame` in R].
+
+[source, python, role="primary"]
+.Pandas
+----
+import pandas as pd <1>
+
+df = pd.DataFrame( <2>
+   {
+      "Name": ["Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"],
+      "Age": [22, 35, 58],
+      "Sex": ["male", "male", "female"]
+   }
+)
+----
+<1> Import the `pandas` package
+<2> Create a `DataFrame` using a dictionary of lists. +
+The key is the column header.  +
+The value is the column's data.
+
+[source, R, role="secondary"]
+.R
+----
+df <- data.frame(
+    Name = c("Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"),
+    Age = c(22, 35, 58),
+    Sex = c("male", "male", "female")
+)
+----
+
+[source, sql, role="secondary"]
+.SQL
+----
+CREATE TABLE passengers (Name VARCHAR(255), Age INT, Sex VARCHAR(255)); <1>
+INSERT INTO passengers VALUES ('Braund, Mr. Owen Harris', 22, 'male'); <2>
+INSERT INTO passengers VALUES ('Allen, Mr. William Henry', 35, 'male'); <2>
+INSERT INTO passengers VALUES ('Bonnell, Miss. Elizabeth', 58, 'female'); <2>
+----
+<1> Build the structure
+<2> Insert the data
+
+[source, java, role="secondary"]
+.Joinery
+----
+import joinery.DataFrame; <1>
+
+DataFrame dataFrame = new DataFrame(
+    Collections.emptyList(), <2>
+    List.of("Name", "Age", "Sex"), <3>
+    List.of( <4>
+        List.of("Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"),
+        List.of(22, 35, 58),
+        List.of("male", "male", "female")
+    )
+);
+----
+<1> Import the  `DataFrame` class
+<2> Empty index
+<3> The column names
+<4> The data is a `List` of `List`
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+import tech.tablesaw.api.*; <1>
+
+StringColumn names = StringColumn.create("Name", "Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"); <2>
+IntColumn ages = IntColumn.create("Age", 22, 35, 58); <2>
+StringColumn sex =  StringColumn.create("Sex", "male", "male", "female"); <2>
+Table table = Table.create(names, ages, sex); <3>
+----
+<1> Import all `api` classes
+<2> Each column is typed and created separately
+<3> The `Table` is created from a list of `Column` objects. +
+There is no way to build the `Table` from the data.
+
+==== Previewing the data
+
+[source, python, role="primary"]
+.Pandas
+----
+df = pd.DataFrame(...)
+
+print(df) <1>
+----
+<1> Sample data is shown. +
+In this specific case, the entire data is shown since the number of rows is very small. +
+The result is :
++
+```
+                       Name  Age     Sex
+0   Braund, Mr. Owen Harris   22    male
+1  Allen, Mr. William Henry   35    male
+2  Bonnell, Miss. Elizabeth   58  female
+```
+
+[source, R, role="secondary"]
+.R
+----
+df <- data.frame(...)
+
+df <1>
+----
+<1> Sample data is shown. +
+In this specific case, the entire data is shown since the number of rows is very small. +
+The result is :
++
+```
+                      Name Age    Sex
+1  Braund, Mr. Owen Harris  22   male
+2 Allen, Mr. William Henry  35   male
+3 Bonnell, Miss. Elizabeth  58 female
+```
+
+[source, java, role="secondary"]
+.Joinery
+----
+DataFrame dataFrame = new DataFrame(...);
+
+System.out.println(dataframe); <1>
+----
+<1> Sample data is shown. +
+In this specific case, the entire data is shown since the number of rows is very small. +
+The result is :
++
+```
+  	                Name	Age	   Sex
+ 0	Braund, Mr. Owen Harris	 22	male
+ 1	Allen, Mr. Willia...	 35	male
+ 2	Bonnell, Miss. El...	 58	female
+```
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+Table table = Table.create(...);
+
+System.out.println(table); <1>
+----
+<1> Sample data is shown. +
+In this specific case, the entire data is shown since the number of rows is very small. +
+The result is :
++
+```
+           Name            |  Age  |   Sex    |
+-----------------------------------------------
+  Braund, Mr. Owen Harris  |   22  |    male  |
+ Allen, Mr. William Henry  |   35  |    male  |
+ Bonnell, Miss. Elizabeth  |   58  |  female  |
+```
+
+==== Describing the `DataFrame`
+
+[source, python, role="primary"]
+.Pandas
+----
+df = pd.DataFrame(...)
+
+print(df.describe()) <1>
+----
+<1> Returns statistical information about all numerical columns. +
+The result is :
++
+```
+             Age
+count   3.000000
+mean   38.333333
+std    18.230012
+min    22.000000
+25%    28.500000
+50%    35.000000
+75%    46.500000
+max    58.000000
+```
+
+[source, R, role="secondary"]
+.R
+----
+df <- data.frame(...)
+
+summary(df) <1>
+----
+<1> Returns statistical information about all numerical columns. +
+The result is :
++
+```
+     Name                Age            Sex
+ Length:3           Min.   :22.00   Length:3
+ Class :character   1st Qu.:28.50   Class :character
+ Mode  :character   Median :35.00   Mode  :character
+                    Mean   :38.33
+                    3rd Qu.:46.50
+                    Max.   :58.00
+```
+
+[source, sql, role="secondary"]
+.SQL
+----
+SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'passengers'; <1>
+----
+<1> Returns the data type of each column. +
+This is the syntax for PostgreSQL footnote:[In some databases, this command is simply  `DESCRIBE passengers`]. +
+The result is :
++
+```
+column_name|data_type        |character_maximum_length|
+-----------|-----------------|------------------------|
+age        |integer          |                        |
+name       |character varying|                     255|
+sex        |character varying|                     255|
+```
+
+[source, java, role="secondary"]
+.Joinery
+----
+DataFrame dataFrame = new DataFrame(...);
+
+System.out.println(dataFrame.describe()); <1>
+----
+<1> Returns statistical information about all numerical columns. +
+The result is :
++
+```
+     	          Age
+count	   3.00000000
+ mean	  38.33333333
+  std	  18.23001189
+  var	 332.33333333
+  max	  58.00000000
+  min	  22.00000000
+```
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+Table table = Table.create(...);
+
+System.out.println(table); <1>
+----
+<1> Returns the data type of each column. +
+The result is :
++
+```
+            Structure of null
+ Index  |  Column Name  |  Column Type  |
+-----------------------------------------
+     0  |         Name  |       STRING  |
+     1  |          Age  |      INTEGER  |
+     2  |          Sex  |       STRING  |
+```
+
+==== Creating a `Series`
+
+What the Pandas library calls a `Series` is a column.
+
+[source, python, role="primary"]
+.Pandas
+----
+ages = pd.Series([22, 35, 58], name="Age") <1>
+----
+<1> A series doesn't have a column lavel and would therefore be previewed as:
++
+```
+0    22
+1    35
+2    58
+Name: Age, dtype: int64
+```
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+IntColumn ages = IntColumn.create("Age", 22, 35, 58);
+----
+
+=== Selection
+
+==== Selecting `Series` from a `DataFrame`
+
+[source, python, role="primary"]
+.Pandas
+----
+df["Age"] <1>
+df[["Age", "Sex"]] <2>
+----
+<1> When selecting a single column the result is a `Series`.
+<2> When selecting multiple columns, you need to pass an array of labels.
+
+[source, R, role="secondary"]
+.R
+----
+
+----
+
+[source, sql, role="secondary"]
+.SQL
+----
+SELECT Age FROM passengers;
+SELECT Age, Sex FROM passengers;
+----
+
+[source, java, role="secondary"]
+.Joinery
+----
+List<Integer> ages = dataFrame.col("Age"); <1>
+DataFrame columns = dataFrame.retain("Age", "Sex"); <2>
+----
+<1> When selecting a single column the result is a `List`.
+<2> When selecting multiple columns, you need to use the `retain` method and the result is a `DataFrame`.
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+Table age = table.select("Age"); <1>
+Table columns = table.select("Age", "Sex"); <1>
+----
+<1> The result is always a `Table`.
+
+== Examples
+
+=== Yahoo! Finance Stock
+
+Description ::
+Return the average monthly close for the three top months of the year for a given stock using https://ca.finance.yahoo.com/[Yahoo! Finance]'s CSV format. +
+This example is documented http://cardillo.github.io/joinery/v1.9/api/reference/joinery/DataFrame.html[here].
+
+Input ::
+
+[%header,format=csv]
+.2 first rows
+|===
+include::../../src/test/resources/stock.csv[lines="1..3"]
+|===
+
+Desired Output ::
+
+`[1403, 1378, 1370]`
+
+Prrocedure ::
+
+. Keep `Date` and `Close`
+. Map `Date` : keep month only
+. Group by `Date` using `mean`
+. Sort by  `Close` descending
+. Keep first 3 rows
+. Map `Close` : round value
+
+[source, java, indent=0, role="primary"]
+.Java 8 Streams
+----
+CSVParser parser = CSVParser.parse(ClassLoader.getSystemResourceAsStream("stock.csv"), Charset.forName("UTF-8"), CSVFormat.DEFAULT.withFirstRecordAsHeader()); <1>
+
+List<Integer> result = parser.getRecords()
+    .stream() <2>
+    .collect(groupingBy(record -> LocalDate.parse(record.get("Date")).getMonth(), averagingDouble(record -> Double.parseDouble(record.get("Close"))))) <3>
+    .entrySet()
+    .stream() <4>
+    .sorted(Map.Entry.<Month, Double>comparingByValue().reversed()) <5>
+    .limit(3) <6>
+    .map(entry -> (int)Math.floor(entry.getValue()))
+    .collect(toList()); <7>
+----
+<1> Using Apache CSV to read the CSV file
+<2> `Stream<CSVRecord>`
+<3> `Map<Month, Double>`
+<4> stream again
+<5> sorting  by `Close` descending
+<6> `Map` with 3 entries
+<7> `List` with 3 values
+
+[source, java, indent=0, role="secondary"]
+.Joinery
+----
+List<Integer> result = DataFrame
+    .readCsv(ClassLoader.getSystemResourceAsStream("stock.csv")) <1>
+    .retain("Date", "Close") <2>
+    .groupBy(row -> Date.class.cast(row.get(0)).getMonth()) <3>
+    .mean() <4>
+    .sortBy("-Close") <5>
+    .head(3) <6>
+    .apply(value -> Number.class.cast(value).intValue())
+    .col("Close"); <7>
+----
+<1> `DataFrame` with 7 columns and 253 rows
+<2> `DataFrame` with 2 columns and 253 rows
+<3> nothing happens here
+<4> `DataFrame` with 1 column and 12 rows
+<5> sorting  by `Close` descending
+<6> `DataFrame` with 1 columns and 3 rows
+<7> `List` with 3 values
+
+[source, indent=0, role="secondary"]
+.Tablesaw
+----
+Table table = Table
+    .read().csv(ClassLoader.getSystemResourceAsStream("stock.csv")); <1>
+List<Integer> result = table
+    .select("Date", "Close") <2>
+    .summarize("Close", mean).by(table.dateColumn("Date").month()) <3>
+    .sortOn("-Mean [Close]") <4>
+    .first(3) <5>
+    .doubleColumn("Mean [Close]").asIntColumn() <6>
+    .asList(); <7>
+----
+<1> `Table` with 7 columns and 253 rows
+<2> `Table` with 2 columns and 3 rows
+<3> `Table` with 2 columns ( `Mean [Close]` & `Date month` ) and 12 rows
+<4> sorting  by `Mean [Close]` descending
+<5> `Table` with 2 column and 3 rows
+<6> `Table` with 1 column and 3 rows
+<7> `List` with 3 values
