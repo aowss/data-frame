@@ -21,6 +21,6 @@ Tablesaw can be used inside https://jupyter.org/[Jupyter] notebooks using http:/
 +
 image::Run-BeakerX.png[Run BeakerX]
 
-. Access Beaker at http://locahost:8888?token={generatedToken} footnote:[The URL is written to the console, [red]#as shown#, when you run BeakerX] footnote:[You might have to use `localhost` instead of the random id generate for the host, e.g. `4a25c59faf29` in the screenshot]
+. Access Beaker at http://locahost:8888?token={generatedToken} footnote:[The URL is written to the console, [red]#as shown#, when you run BeakerX] footnote:[You might have to use `localhost` instead of the random id generated for the host, e.g. `4a25c59faf29` in the screenshot]
 . Use the `StartHere.ipynb` notebook
 . Scroll down to the `Tablesaw` section and use the notebook provided there
