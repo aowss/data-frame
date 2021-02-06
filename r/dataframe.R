@@ -5,3 +5,12 @@ df <- data.frame(
 )
 
 df
+
+names(df)
+
+df[c("Age")]
+df[c("Age", "Sex")]
+
+df[2]
+df[2:3]
+df[c(2,3)]

@@ -574,7 +574,7 @@ $(globalSwitch);
 </li>
 <li><a href="#_selection">Selection</a>
 <ul class="sectlevel3">
-<li><a href="#_selecting_series_from_a_dataframe">Selecting <code>Series</code> from a <code>DataFrame</code></a></li>
+<li><a href="#_selecting_columns">Selecting columns</a></li>
 </ul>
 </li>
 </ul>
@@ -1022,22 +1022,31 @@ Name: Age, dtype: int64</code></pre>
 <div class="sect2">
 <h3 id="_selection">Selection</h3>
 <div class="sect3">
-<h4 id="_selecting_series_from_a_dataframe">Selecting <code>Series</code> from a <code>DataFrame</code></h4>
+<h4 id="_selecting_columns">Selecting columns</h4>
 <div class="listingblock primary">
 <div class="title">Pandas</div>
 <div class="content">
-<pre class="highlightjs highlight"><code data-lang="python" class="language-python hljs">df["Age"] <i class="conum" data-value="1"></i><b>(1)</b>
-df[["Age", "Sex"]] <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code data-lang="python" class="language-python hljs">df.columns <i class="conum" data-value="1"></i><b>(1)</b>
+
+df["Age"] <i class="conum" data-value="2"></i><b>(2)</b>
+df[["Age", "Sex"]] <i class="conum" data-value="3"></i><b>(3)</b>
+
+df.iloc[:, 1]
+df.iloc[:, [1, 2]]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>When selecting a single column the result is a <code>Series</code>.</td>
+<td>The column names is an index.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When selecting a single column the result is a <code>Series</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>When selecting multiple columns, you need to pass an array of labels.</td>
 </tr>
 </table>
@@ -1045,47 +1054,97 @@ df[["Age", "Sex"]] <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 <div class="listingblock secondary">
 <div class="title">R</div>
 <div class="content">
-<pre class="highlightjs highlight"><code data-lang="R" class="language-R hljs"></code></pre>
-</div>
-</div>
-<div class="listingblock secondary">
-<div class="title">SQL</div>
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="sql" class="language-sql hljs">SELECT Age FROM passengers;
-SELECT Age, Sex FROM passengers;</code></pre>
-</div>
-</div>
-<div class="listingblock secondary">
-<div class="title">Joinery</div>
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">List&lt;Integer&gt; ages = dataFrame.col("Age"); <i class="conum" data-value="1"></i><b>(1)</b>
-DataFrame columns = dataFrame.retain("Age", "Sex"); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code data-lang="R" class="language-R hljs">names(df)
+
+df[c("Age")] <i class="conum" data-value="1"></i><b>(1)</b>
+df[c("Age", "Sex")] <i class="conum" data-value="1"></i><b>(1)</b>
+
+df[2] <i class="conum" data-value="2"></i><b>(2)</b> <i class="conum" data-value="3"></i><b>(3)</b>
+df[2:3] <i class="conum" data-value="4"></i><b>(4)</b>
+df[c(2,3)] <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>When selecting a single column the result is a <code>List</code>.</td>
+<td><code>c("Age")</code> creates a vector of column names</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>When selecting multiple columns, you need to use the <code>retain</code> method and the result is a <code>DataFrame</code>.</td>
+<td>Indices start at 1</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Using a scalar to select a single column</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>2:3</code> and <code>c(2,3)</code> result in a vector with 2 integers</td>
+</tr>
+</table>
+</div>
+<div class="listingblock secondary">
+<div class="title">SQL</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="sql" class="language-sql hljs"> <i class="conum" data-value="1"></i><b>(1)</b>
+SELECT Age FROM passengers;
+SELECT Age, Sex FROM passengers;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>No straightforward portable way of getting the column names</td>
+</tr>
+</table>
+</div>
+<div class="listingblock secondary">
+<div class="title">Joinery</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">Set&lt;Object&gt; columnNames = dataFrame.columns(); <i class="conum" data-value="1"></i><b>(1)</b>
+
+DataFrame ages = dataFrame.retain("Age"); <i class="conum" data-value="2"></i><b>(2)</b>
+DataFrame columns = dataFrame.retain("Age", "Sex"); <i class="conum" data-value="2"></i><b>(2)</b>
+
+DataFrame ageColumn = dataFrame.retain(1); <i class="conum" data-value="2"></i><b>(2)</b>
+DataFrame columnsList = dataFrame.retain(1,2); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The column names is a <code>Set&lt;Object&gt;</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The result is a <code>DataFrame</code> whether you select by name or by index</td>
 </tr>
 </table>
 </div>
 <div class="listingblock secondary">
 <div class="title">Tablesaw</div>
 <div class="content">
-<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">Table age = table.select("Age"); <i class="conum" data-value="1"></i><b>(1)</b>
-Table columns = table.select("Age", "Sex"); <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">List&lt;String&gt; columnNames = table.columnNames();
+
+Table age = table.select("Age"); <i class="conum" data-value="1"></i><b>(1)</b>
+Table columns = table.select("Age", "Sex"); <i class="conum" data-value="1"></i><b>(1)</b>
+
+Column ageColumn = table.column(1); <i class="conum" data-value="2"></i><b>(2)</b>
+List&lt;Column&lt;?&gt;&gt; columnsList = table.columns(1, 2); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The result is always a <code>Table</code>.</td>
+<td>The result is a <code>Table</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Selecting by index returns a <code>Column</code> or a <code>List&lt;Column&gt;</code>.</td>
 </tr>
 </table>
 </div>
@@ -1339,7 +1398,7 @@ List&lt;Integer&gt; result = table
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-05 09:15:41 -0500
+Last updated 2021-02-05 22:37:28 -0500
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

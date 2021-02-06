@@ -1,9 +1,11 @@
 import joinery.DataFrame;
 
 import org.junit.jupiter.api.*;
+import tech.tablesaw.columns.Column;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -34,11 +36,23 @@ public class JoineryTest {
             List.of(List.of("Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"), List.of(22, 35, 58), List.of("male", "male", "female"))
         );
 
+        Set<Object> columnNames = dataFrame.columns();
+        assertThat(columnNames, is(Set.of("Name","Age", "Sex")));
+
         List<Integer> ages = dataFrame.col("Age");
         assertThat(ages, is(List.of(22, 35, 58)));
 
+        DataFrame agesDF = dataFrame.retain("Age");
+        assertThat(agesDF.columns(), is(Set.of("Age")));
+
         DataFrame columns = dataFrame.retain("Age", "Sex");
         assertThat(columns.columns(), is(Set.of("Age", "Sex")));
+
+        DataFrame ageColumn = dataFrame.retain(1);
+        assertThat(ageColumn.columns(), is(Set.of("Age")));
+
+        DataFrame columnsList = dataFrame.retain(1,2);
+        assertThat(columnsList.columns(), is(Set.of("Age", "Sex")));
     }
 
     @Test

@@ -2,9 +2,11 @@ import tech.tablesaw.api.*;
 import static tech.tablesaw.aggregate.AggregateFunctions.*;
 
 import org.junit.jupiter.api.*;
+import tech.tablesaw.columns.Column;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -33,11 +35,20 @@ public class TablesawTest {
         StringColumn sex =  StringColumn.create("Sex", "male", "male", "female");
         Table table = Table.create(names, ages, sex);
 
+        List<String> columnNames = table.columnNames();
+        assertThat(columnNames, is(List.of("Name","Age", "Sex")));
+
         Table age = table.select("Age");
         assertThat(age.columnNames(), is(List.of("Age")));
 
         Table columns = table.select("Age", "Sex");
         assertThat(columns.columnNames(), is(List.of("Age", "Sex")));
+
+        Column ageColumn = table.column(1);
+        assertThat(ageColumn.name(), is("Age"));
+
+        List<Column<?>> columnsList = table.columns(1, 2);
+        assertThat(columnsList.stream().map(Column::name).collect(Collectors.toList()), is(List.of("Age", "Sex")));
     }
 
     @Test

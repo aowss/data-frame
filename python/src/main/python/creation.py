@@ -18,6 +18,13 @@ print("\nSeries: \n" + str(ages))
 
 print("\nSeries' describe(): \n" + str(ages.describe()))
 
+print("\nDataFrame's column names: \n" + str(df.columns))
+
 print("\nDataFrame's 'Age' column: \n" + str(df["Age"]))
 
 print("\nDataFrame's 'Age' and 'Sex' columns: \n" + str(df[["Age", "Sex"]]))
+
+print("\nDataFrame's 'Age' column by index: \n" + str(df.iloc[:, 1]))
+
+print("\nDataFrame's 'Age' and 'Sex' columns by indices: \n" + str(df.iloc[:, [1, 2]]))
+
