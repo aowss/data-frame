@@ -6,10 +6,12 @@ import tech.tablesaw.columns.Column;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static tech.tablesaw.api.QuerySupport.and;
 
 @DisplayName("Tablesaw")
 public class TablesawTest {
@@ -49,6 +51,27 @@ public class TablesawTest {
 
         List<Column<?>> columnsList = table.columns(1, 2);
         assertThat(columnsList.stream().map(Column::name).collect(Collectors.toList()), is(List.of("Age", "Sex")));
+    }
+
+    @Test
+    @DisplayName("Filter rows")
+    public void filter() {
+        StringColumn names = StringColumn.create("Name", "Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth");
+        IntColumn ages = IntColumn.create("Age", 22, 35, 58);
+        StringColumn sex =  StringColumn.create("Sex", "male", "male", "female");
+        Table table = Table.create(names, ages, sex);
+
+        Table over30 = table.where(table.intColumn("Age").isGreaterThan(30));
+        assertThat(over30.rowCount(), is(2));
+
+        Table malesOver30 = table
+            .where(
+                and(
+                    t -> t.intColumn("Age").isGreaterThan(30),
+                    t -> t.stringColumn("Sex").equalsIgnoreCase("male")
+                )
+            );
+        assertThat(malesOver30.rowCount(), is(1));
     }
 
     @Test

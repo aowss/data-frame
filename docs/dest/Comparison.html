@@ -575,6 +575,7 @@ $(globalSwitch);
 <li><a href="#_selection">Selection</a>
 <ul class="sectlevel3">
 <li><a href="#_selecting_columns">Selecting columns</a></li>
+<li><a href="#_filtering_rows">Filtering rows</a></li>
 </ul>
 </li>
 </ul>
@@ -1149,6 +1150,107 @@ List&lt;Column&lt;?&gt;&gt; columnsList = table.columns(1, 2); <i class="conum" 
 </table>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_filtering_rows">Filtering rows</h4>
+<div class="listingblock primary">
+<div class="title">Pandas</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="python" class="language-python hljs">df[df["Age"] &gt; 30] <i class="conum" data-value="1"></i><b>(1)</b>
+
+df[(df["Age"] &gt; 30) &amp; (df["Sex"] == "male")] <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>df["Age"] &gt; 30</code> is a predicate that is applied to the <code>DataFrame</code>.<br>
+It eveluates to a <code>Series</code> of booleans.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When combining predicates using <code>&amp;</code> or <code>|</code>, each predicate must be between parenthesis.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock secondary">
+<div class="title">R</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="R" class="language-R hljs">df[df$Age &gt; 30, ] <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+
+df[df$Age &gt; 30 &amp; df$Sex == "male", ]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>$</code> sign is used to specify the column</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The first argument is the predicate to filter the rows and the second argument is the column selector.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock secondary">
+<div class="title">SQL</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="sql" class="language-sql hljs">SELECT * FROM passengers WHERE Age &gt; 30;
+
+SELECT * FROM passengers WHERE Age &gt; 30 AND Sex = 'male';</code></pre>
+</div>
+</div>
+<div class="listingblock secondary">
+<div class="title">Joinery</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">DataFrame.Predicate&lt;Object&gt; ageOver30 = values -&gt; ((Integer)values.get(1)).intValue() &gt; 30; <i class="conum" data-value="1"></i><b>(1)</b>
+DataFrame over30 = dataFrame.select(ageOver30);
+
+DataFrame.Predicate&lt;Object&gt; maleAgeOver30 = values -&gt; Integer.class.cast(values.get(1)).intValue() &gt; 30 &amp;&amp; ((String)values.get(2)).equals("male");
+DataFrame maleOver30 = dataFrame.select(maleAgeOver30);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>values</code> is of type <code>List&lt;Object&gt;</code> and contains all the values for a given row</td>
+</tr>
+</table>
+</div>
+<div class="listingblock secondary">
+<div class="title">Tablesaw</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">Table over30 = table.where(table.intColumn("Age").isGreaterThan(30)); <i class="conum" data-value="1"></i><b>(1)</b>
+
+Table malesOver30 = table
+    .where(
+        and( <i class="conum" data-value="2"></i><b>(2)</b>
+            t -&gt; t.intColumn("Age").isGreaterThan(30), <i class="conum" data-value="3"></i><b>(3)</b>
+            t -&gt; t.stringColumn("Sex").equalsIgnoreCase("male") <i class="conum" data-value="3"></i><b>(3)</b>
+        )
+    );</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>table.intColumn("Age").isGreaterThan(30)</code> is of type <code>Selection</code>.<br>
+<code>isGreaterThan</code> is a <code>NumberFilters</code> that returns a <code>Selection</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The static <code>and</code>, <code>or</code> or <code>not</code> methods from <code>QuerySupport</code> can be used to combine filters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>and</code> method takes a list of selection functions of the type <code>Function&lt;Table, Selection&gt;</code></td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1398,7 +1500,7 @@ List&lt;Integer&gt; result = table
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-05 22:37:28 -0500
+Last updated 2021-02-10 20:06:47 -0500
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

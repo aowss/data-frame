@@ -56,6 +56,24 @@ public class JoineryTest {
     }
 
     @Test
+    @DisplayName("Filter rows")
+    public void filter() {
+        DataFrame dataFrame = new DataFrame(
+            Collections.emptyList(),
+            List.of("Name", "Age", "Sex"),
+            List.of(List.of("Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth"), List.of(22, 35, 58), List.of("male", "male", "female"))
+        );
+
+        DataFrame.Predicate<Object> ageOver30 = values -> ((Integer)values.get(1)).intValue() > 30;
+        DataFrame over30 = dataFrame.select(ageOver30);
+        assertThat(over30.length(), is(2));
+
+        DataFrame.Predicate<Object> maleAgeOver30 = values -> Integer.class.cast(values.get(1)).intValue() > 30 && ((String)values.get(2)).equals("male");
+        DataFrame maleOver30 = dataFrame.select(maleAgeOver30);
+        assertThat(maleOver30.length(), is(1));
+    }
+
+    @Test
     @DisplayName("rounded average monthly close for the three top months of the year")
     public void stock() throws IOException {
         List<Integer> result = DataFrame

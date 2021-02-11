@@ -14,3 +14,6 @@ df[c("Age", "Sex")]
 df[2]
 df[2:3]
 df[c(2,3)]
+
+df[df$Age > 30, ]
+df[df$Age > 30 & df$Sex == "male", ]

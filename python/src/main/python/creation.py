@@ -28,3 +28,7 @@ print("\nDataFrame's 'Age' column by index: \n" + str(df.iloc[:, 1]))
 
 print("\nDataFrame's 'Age' and 'Sex' columns by indices: \n" + str(df.iloc[:, [1, 2]]))
 
+print("\nFilter rows where Age > 30: \n" + str(df[df["Age"] > 30]))
+
+print("\nFilter rows where Age > 30 and Sex == male : \n" + str(df[(df["Age"] > 30) & (df["Sex"] == "male")]))
+

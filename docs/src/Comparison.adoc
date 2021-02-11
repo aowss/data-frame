@@ -371,6 +371,66 @@ List<Column<?>> columnsList = table.columns(1, 2); <2>
 <1> The result is a `Table`.
 <2> Selecting by index returns a `Column` or a `List<Column>`.
 
+==== Filtering rows
+
+[source, python, role="primary"]
+.Pandas
+----
+df[df["Age"] > 30] <1>
+
+df[(df["Age"] > 30) & (df["Sex"] == "male")] <2>
+----
+<1> `df["Age"] > 30` is a predicate that is applied to the `DataFrame`. +
+It eveluates to a `Series` of booleans.
+<2> When combining predicates using `&` or `|`, each predicate must be between parenthesis.
+
+[source, R, role="secondary"]
+.R
+----
+df[df$Age > 30, ] <1> <2>
+
+df[df$Age > 30 & df$Sex == "male", ]
+----
+<1> The `$` sign is used to specify the column
+<2> The first argument is the predicate to filter the rows and the second argument is the column selector.
+
+[source, sql, role="secondary"]
+.SQL
+----
+SELECT * FROM passengers WHERE Age > 30;
+
+SELECT * FROM passengers WHERE Age > 30 AND Sex = 'male';
+----
+
+[source, java, role="secondary"]
+.Joinery
+----
+DataFrame.Predicate<Object> ageOver30 = values -> ((Integer)values.get(1)).intValue() > 30; <1>
+DataFrame over30 = dataFrame.select(ageOver30);
+
+DataFrame.Predicate<Object> maleAgeOver30 = values -> Integer.class.cast(values.get(1)).intValue() > 30 && ((String)values.get(2)).equals("male");
+DataFrame maleOver30 = dataFrame.select(maleAgeOver30);
+----
+<1> `values` is of type `List<Object>` and contains all the values for a given row
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+Table over30 = table.where(table.intColumn("Age").isGreaterThan(30)); <1>
+
+Table malesOver30 = table
+    .where(
+        and( <2>
+            t -> t.intColumn("Age").isGreaterThan(30), <3>
+            t -> t.stringColumn("Sex").equalsIgnoreCase("male") <3>
+        )
+    );
+----
+<1> `table.intColumn("Age").isGreaterThan(30)` is of type `Selection`. +
+`isGreaterThan` is a `NumberFilters` that returns a `Selection`.
+<2> The static `and`, `or` or `not` methods from `QuerySupport` can be used to combine filters.
+<3> The `and` method takes a list of selection functions of the type `Function<Table, Selection>`
+
 == Examples
 
 === Yahoo! Finance Stock
