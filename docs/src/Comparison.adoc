@@ -431,6 +431,69 @@ Table malesOver30 = table
 <2> The static `and`, `or` or `not` methods from `QuerySupport` can be used to combine filters.
 <3> The `and` method takes a list of selection functions of the type `Function<Table, Selection>`
 
+==== Selecting columns and Filtering rows
+
+[source, python, role="primary"]
+.Pandas
+----
+df.loc[df["Age"] > 30, ["Name", "Sex"]] <1>
+
+df.loc[(df["Age"] > 30) & (df["Sex"] == "male"), "Name"] <1>
+----
+<1> You must use `loc` / `iloc` when selecting columns and filtering rows in one go. +
+`loc` uses names and `iloc` uses indices.
+<2> The first argument is the predicate to filter the rows and the second argument is the column selector.
+
+[source, R, role="secondary"]
+.R
+----
+df[df$Age > 30, c("Name", "Sex")]
+df[df$Age > 30 & df$Sex == "male", c("Name")]
+
+subset(x = df, subset = Age > 30, select = c("Name", "Sex")) <1>
+subset(x = df, subset = Age > 30 & Sex == "male", select = c("Name")) <1>
+----
+<1> The `subset` function can be used instead of the brackets
+
+[source, sql, role="secondary"]
+.SQL
+----
+SELECT Name, Sex FROM passengers WHERE Age > 30;
+
+SELECT Name FROM passengers WHERE Age > 30 AND Sex = 'male';
+----
+
+[source, java, role="secondary"]
+.Joinery
+----
+DataFrame.Predicate<Object> ageOver30 = ...;
+DataFrame over30 = dataFrame
+    .select(ageOver30)
+    .retain("Name", "Sex");
+
+DataFrame.Predicate<Object> maleAgeOver30 = ...;
+DataFrame maleOver30 = dataFrame
+    .select(maleAgeOver30)
+    .retain("Name");
+----
+
+[source, java, role="secondary"]
+.Tablesaw
+----
+Table over30 = table
+    .where(table.intColumn("Age").isGreaterThan(30))
+    .select("Name", "Sex");
+
+Table malesOver30 = table
+    .where(
+        and(
+            t -> t.intColumn("Age").isGreaterThan(30),
+            t -> t.stringColumn("Sex").equalsIgnoreCase("male")
+        )
+    )
+    .select("Name");
+----
+
 == Examples
 
 === Yahoo! Finance Stock

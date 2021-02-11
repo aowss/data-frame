@@ -75,6 +75,32 @@ public class TablesawTest {
     }
 
     @Test
+    @DisplayName("Select Columns and Filtering rows")
+    public void selectAndFilter() {
+        StringColumn names = StringColumn.create("Name", "Braund, Mr. Owen Harris", "Allen, Mr. William Henry", "Bonnell, Miss. Elizabeth");
+        IntColumn ages = IntColumn.create("Age", 22, 35, 58);
+        StringColumn sex =  StringColumn.create("Sex", "male", "male", "female");
+        Table table = Table.create(names, ages, sex);
+
+        Table over30 = table
+            .where(table.intColumn("Age").isGreaterThan(30))
+            .select("Name", "Sex");
+        assertThat(over30.rowCount(), is(2));
+        assertThat(over30.columnCount(), is(2));
+
+        Table malesOver30 = table
+            .where(
+                and(
+                    t -> t.intColumn("Age").isGreaterThan(30),
+                    t -> t.stringColumn("Sex").equalsIgnoreCase("male")
+                )
+            )
+            .select("Name");
+        assertThat(malesOver30.rowCount(), is(1));
+        assertThat(malesOver30.columnCount(), is(1));
+    }
+
+    @Test
     @DisplayName("rounded average monthly close for the three top months of the year")
     public void stock() throws IOException {
         Table table = Table
